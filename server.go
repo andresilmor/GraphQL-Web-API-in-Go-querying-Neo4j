@@ -8,11 +8,34 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+
+	"CareXR_API/config"
+	"CareXR_API/ioutils"
 )
 
 const defaultPort = "8080"
 
 func main() {
+	settings, err := config.ReadConfig("config.json")
+	ioutils.PanicOnError(err)
+	println("Username ", settings.Username, "password", settings.Password)
+	driver, err := config.NewDriver(settings)
+	defer driver.Close()
+
+	if driver == nil {
+		os.Exit(1)
+	}
+
+	config.Neo4jDriver = driver
+
+	// Test
+
+	////
+
+	defer func() {
+		ioutils.PanicOnError(driver.Close())
+	}()
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
@@ -25,4 +48,5 @@ func main() {
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
+
 }

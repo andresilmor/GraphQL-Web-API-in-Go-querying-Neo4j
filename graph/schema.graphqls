@@ -77,7 +77,7 @@ input LoginCredentials {
 # ===================================================================== #
 
 type Query {
-  MemberLogin(credentials: LoginCredentials): Member
+  MemberLogin(username: String!, password: String!): Member
   MedicationToTake(isAvailable: Boolean!, pacientID: String, memberID: String, institutionID: String) : [MedicationToTake]
 
 }
