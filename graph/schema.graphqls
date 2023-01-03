@@ -1,0 +1,87 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+# ===================================================================== #
+# Entities (Institution Segment)                                        #
+# ===================================================================== #
+
+interface BaseIdentification {
+  uuid: String
+  label: String
+
+}
+
+type Member implements BaseIdentification {
+  uuid: String
+  label: String
+  name: String
+  password: String
+  token: String
+  MemberOf: [MemberOf]
+
+}
+
+type MemberOf {
+  role: String
+  institution: Institution
+
+}
+
+type Institution implements BaseIdentification {
+  uuid: String
+  label: String
+  name: String
+
+}
+
+type Pacient implements BaseIdentification  {
+  uuid: String
+  label: String
+  name: String
+
+}
+
+# ===================================================================== #
+# Entities (Medicine Segment)                                           #
+# ===================================================================== #
+
+type Medication implements BaseIdentification {
+  uuid: String
+  label: String
+  name: String
+
+}
+
+type MedicationToTake {
+  intOfTime: Int
+  isAvailable: Boolean
+  quantityPer: Int
+  timeMeasure: String
+  medication: Medication
+
+}
+
+# ===================================================================== #
+# Input                                                                 #
+# ===================================================================== #
+
+input LoginCredentials {
+  username: String!
+  password: String!
+
+}
+
+# ===================================================================== #
+# Query                                                                 #
+# ===================================================================== #
+
+type Query {
+  MemberLogin(credentials: LoginCredentials): Member
+  MedicationToTake(isAvailable: Boolean!, pacientID: String, memberID: String, institutionID: String) : [MedicationToTake]
+
+}
+
+# ===================================================================== #
+# Mutation                                                              #
+# ===================================================================== #
