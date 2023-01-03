@@ -13,7 +13,7 @@ import (
 	"CareXR_API/ioutils"
 )
 
-const defaultPort = "8080"
+const defaultPort = "8000"
 
 func main() {
 	settings, err := config.ReadConfig("config.json")
@@ -43,8 +43,8 @@ func main() {
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	http.Handle("/", playground.Handler("GraphQL playground", "/api"))
+	http.Handle("/api", srv)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))

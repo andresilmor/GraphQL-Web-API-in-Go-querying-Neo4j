@@ -32,8 +32,7 @@ func (r *queryResolver) MemberLogin(ctx context.Context, username string, passwo
 		MemberOf: []*model.MemberOf{},
 	}
 
-	for key, element := range memberOfData {
-		fmt.Println("Key:", key, "=>", "Element:", element)
+	for _, element := range memberOfData {
 		role := element.(map[string]interface{})["role"].(string)
 
 		institutionData := element.(map[string]interface{})["institution"].(map[string]interface{})
