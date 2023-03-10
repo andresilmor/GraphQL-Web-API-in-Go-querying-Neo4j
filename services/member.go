@@ -1,7 +1,7 @@
 package services
 
 import (
-	"CareXR_API/fixtures"
+	"CareXR_WebService/fixtures"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 
@@ -51,7 +51,7 @@ func (ms *neo4jMemberService) MemberLogin(username string, password string) (_ M
 		if err != nil {
 			return nil, err
 		}
-
+		println(record)
 		member, _ := record.Get("member")
 		return member.(map[string]interface{}), nil
 
@@ -72,7 +72,7 @@ func (ms *neo4jMemberService) MemberLogin(username string, password string) (_ M
 		*/
 
 	})
-
+	println(Member)
 	session.Close()
 	return results.(Member), nil
 

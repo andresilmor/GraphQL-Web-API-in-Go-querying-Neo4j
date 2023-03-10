@@ -3,7 +3,7 @@
 package graph
 
 import (
-	"CareXR_API/graph/model"
+	"CareXR_WebService/graph/model"
 	"bytes"
 	"context"
 	"embed"

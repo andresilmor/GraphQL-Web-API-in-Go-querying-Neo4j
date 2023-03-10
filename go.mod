@@ -1,4 +1,4 @@
-module CareXR_API
+module CareXR_WebService
 
 go 1.19
 

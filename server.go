@@ -1,7 +1,7 @@
 package main
 
 import (
-	"CareXR_API/graph"
+	"CareXR_WebService/graph"
 	"context"
 	"fmt"
 	"log"
@@ -12,11 +12,11 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 
-	"CareXR_API/config"
-	"CareXR_API/ioutils"
+	"CareXR_WebService/config"
+	"CareXR_WebService/ioutils"
 )
 
-const defaultPort = "8000"
+const defaultPort = "8080"
 
 // Defining the Graphql handler
 func graphqlHandler() gin.HandlerFunc {
@@ -93,7 +93,7 @@ func main() {
 
 	srv.POST("/api", graphqlHandler())
 	srv.GET("/view", playgroundHandler())
-	srv.Run(":8000")
+	srv.Run(":8080")
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 
