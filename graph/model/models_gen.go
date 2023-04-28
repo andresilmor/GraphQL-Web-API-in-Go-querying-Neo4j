@@ -9,9 +9,9 @@ type BaseIdentification interface {
 }
 
 type Institution struct {
-	UUID  *string `json:"uuid"`
-	Label *string `json:"label"`
-	Name  *string `json:"name"`
+	UUID  *string `json:"uuid,omitempty"`
+	Label *string `json:"label,omitempty"`
+	Name  *string `json:"name,omitempty"`
 }
 
 func (Institution) IsBaseIdentification()  {}
@@ -24,9 +24,9 @@ type LoginCredentials struct {
 }
 
 type Medication struct {
-	UUID  *string `json:"uuid"`
-	Label *string `json:"label"`
-	Name  *string `json:"name"`
+	UUID  *string `json:"uuid,omitempty"`
+	Label *string `json:"label,omitempty"`
+	Name  *string `json:"name,omitempty"`
 }
 
 func (Medication) IsBaseIdentification()  {}
@@ -34,20 +34,20 @@ func (this Medication) GetUUID() *string  { return this.UUID }
 func (this Medication) GetLabel() *string { return this.Label }
 
 type MedicationToTake struct {
-	IntOfTime   *int        `json:"intOfTime"`
-	IsAvailable *bool       `json:"isAvailable"`
-	QuantityPer *int        `json:"quantityPer"`
-	TimeMeasure *string     `json:"timeMeasure"`
-	Medication  *Medication `json:"medication"`
+	IntOfTime   *int        `json:"intOfTime,omitempty"`
+	IsAvailable *bool       `json:"isAvailable,omitempty"`
+	QuantityPer *int        `json:"quantityPer,omitempty"`
+	TimeMeasure *string     `json:"timeMeasure,omitempty"`
+	Medication  *Medication `json:"medication,omitempty"`
 }
 
 type Member struct {
-	UUID     *string     `json:"uuid"`
-	Label    *string     `json:"label"`
-	Name     *string     `json:"name"`
-	Password *string     `json:"password"`
-	Token    *string     `json:"token"`
-	MemberOf []*MemberOf `json:"MemberOf"`
+	UUID     *string     `json:"uuid,omitempty"`
+	Label    *string     `json:"label,omitempty"`
+	Name     *string     `json:"name,omitempty"`
+	Password *string     `json:"password,omitempty"`
+	Token    *string     `json:"token,omitempty"`
+	MemberOf []*MemberOf `json:"MemberOf,omitempty"`
 }
 
 func (Member) IsBaseIdentification()  {}
@@ -55,14 +55,14 @@ func (this Member) GetUUID() *string  { return this.UUID }
 func (this Member) GetLabel() *string { return this.Label }
 
 type MemberOf struct {
-	Role        *string      `json:"role"`
-	Institution *Institution `json:"institution"`
+	Role        *string      `json:"role,omitempty"`
+	Institution *Institution `json:"institution,omitempty"`
 }
 
 type Pacient struct {
-	UUID  *string `json:"uuid"`
-	Label *string `json:"label"`
-	Name  *string `json:"name"`
+	UUID  *string `json:"uuid,omitempty"`
+	Label *string `json:"label,omitempty"`
+	Name  *string `json:"name,omitempty"`
 }
 
 func (Pacient) IsBaseIdentification()  {}

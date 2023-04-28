@@ -914,7 +914,7 @@ func (ec *executionContext) _MedicationToTake_medication(ctx context.Context, fi
 	}
 	res := resTmp.(*model.Medication)
 	fc.Result = res
-	return ec.marshalOMedication2ᚖCareXR_APIᚋgraphᚋmodelᚐMedication(ctx, field.Selections, res)
+	return ec.marshalOMedication2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐMedication(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_MedicationToTake_medication(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1168,7 +1168,7 @@ func (ec *executionContext) _Member_MemberOf(ctx context.Context, field graphql.
 	}
 	res := resTmp.([]*model.MemberOf)
 	fc.Result = res
-	return ec.marshalOMemberOf2ᚕᚖCareXR_APIᚋgraphᚋmodelᚐMemberOf(ctx, field.Selections, res)
+	return ec.marshalOMemberOf2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐMemberOf(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Member_MemberOf(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1256,7 +1256,7 @@ func (ec *executionContext) _MemberOf_institution(ctx context.Context, field gra
 	}
 	res := resTmp.(*model.Institution)
 	fc.Result = res
-	return ec.marshalOInstitution2ᚖCareXR_APIᚋgraphᚋmodelᚐInstitution(ctx, field.Selections, res)
+	return ec.marshalOInstitution2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐInstitution(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_MemberOf_institution(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1428,7 +1428,7 @@ func (ec *executionContext) _Query_MemberLogin(ctx context.Context, field graphq
 	}
 	res := resTmp.(*model.Member)
 	fc.Result = res
-	return ec.marshalOMember2ᚖCareXR_APIᚋgraphᚋmodelᚐMember(ctx, field.Selections, res)
+	return ec.marshalOMember2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐMember(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_MemberLogin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1494,7 +1494,7 @@ func (ec *executionContext) _Query_MedicationToTake(ctx context.Context, field g
 	}
 	res := resTmp.([]*model.MedicationToTake)
 	fc.Result = res
-	return ec.marshalOMedicationToTake2ᚕᚖCareXR_APIᚋgraphᚋmodelᚐMedicationToTake(ctx, field.Selections, res)
+	return ec.marshalOMedicationToTake2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐMedicationToTake(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_MedicationToTake(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4439,7 +4439,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) marshalOInstitution2ᚖCareXR_APIᚋgraphᚋmodelᚐInstitution(ctx context.Context, sel ast.SelectionSet, v *model.Institution) graphql.Marshaler {
+func (ec *executionContext) marshalOInstitution2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐInstitution(ctx context.Context, sel ast.SelectionSet, v *model.Institution) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -4462,14 +4462,14 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	return res
 }
 
-func (ec *executionContext) marshalOMedication2ᚖCareXR_APIᚋgraphᚋmodelᚐMedication(ctx context.Context, sel ast.SelectionSet, v *model.Medication) graphql.Marshaler {
+func (ec *executionContext) marshalOMedication2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐMedication(ctx context.Context, sel ast.SelectionSet, v *model.Medication) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Medication(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOMedicationToTake2ᚕᚖCareXR_APIᚋgraphᚋmodelᚐMedicationToTake(ctx context.Context, sel ast.SelectionSet, v []*model.MedicationToTake) graphql.Marshaler {
+func (ec *executionContext) marshalOMedicationToTake2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐMedicationToTake(ctx context.Context, sel ast.SelectionSet, v []*model.MedicationToTake) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -4496,7 +4496,7 @@ func (ec *executionContext) marshalOMedicationToTake2ᚕᚖCareXR_APIᚋgraphᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOMedicationToTake2ᚖCareXR_APIᚋgraphᚋmodelᚐMedicationToTake(ctx, sel, v[i])
+			ret[i] = ec.marshalOMedicationToTake2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐMedicationToTake(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4510,21 +4510,21 @@ func (ec *executionContext) marshalOMedicationToTake2ᚕᚖCareXR_APIᚋgraphᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalOMedicationToTake2ᚖCareXR_APIᚋgraphᚋmodelᚐMedicationToTake(ctx context.Context, sel ast.SelectionSet, v *model.MedicationToTake) graphql.Marshaler {
+func (ec *executionContext) marshalOMedicationToTake2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐMedicationToTake(ctx context.Context, sel ast.SelectionSet, v *model.MedicationToTake) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._MedicationToTake(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOMember2ᚖCareXR_APIᚋgraphᚋmodelᚐMember(ctx context.Context, sel ast.SelectionSet, v *model.Member) graphql.Marshaler {
+func (ec *executionContext) marshalOMember2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐMember(ctx context.Context, sel ast.SelectionSet, v *model.Member) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Member(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOMemberOf2ᚕᚖCareXR_APIᚋgraphᚋmodelᚐMemberOf(ctx context.Context, sel ast.SelectionSet, v []*model.MemberOf) graphql.Marshaler {
+func (ec *executionContext) marshalOMemberOf2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐMemberOf(ctx context.Context, sel ast.SelectionSet, v []*model.MemberOf) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -4551,7 +4551,7 @@ func (ec *executionContext) marshalOMemberOf2ᚕᚖCareXR_APIᚋgraphᚋmodelᚐ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOMemberOf2ᚖCareXR_APIᚋgraphᚋmodelᚐMemberOf(ctx, sel, v[i])
+			ret[i] = ec.marshalOMemberOf2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐMemberOf(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4565,7 +4565,7 @@ func (ec *executionContext) marshalOMemberOf2ᚕᚖCareXR_APIᚋgraphᚋmodelᚐ
 	return ret
 }
 
-func (ec *executionContext) marshalOMemberOf2ᚖCareXR_APIᚋgraphᚋmodelᚐMemberOf(ctx context.Context, sel ast.SelectionSet, v *model.MemberOf) graphql.Marshaler {
+func (ec *executionContext) marshalOMemberOf2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐMemberOf(ctx context.Context, sel ast.SelectionSet, v *model.MemberOf) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
