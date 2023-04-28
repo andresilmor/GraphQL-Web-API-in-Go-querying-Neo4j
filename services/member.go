@@ -72,7 +72,7 @@ func (ms *neo4jMemberService) MemberLogin(username string, password string) (_ M
 		*/
 
 	})
-	println(Member)
+	
 	session.Close()
 	return results.(Member), nil
 
