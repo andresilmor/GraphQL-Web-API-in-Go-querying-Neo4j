@@ -8,6 +8,17 @@ type BaseIdentification interface {
 	GetLabel() *string
 }
 
+type MemberLoginResponse interface {
+	IsMemberLoginResponse()
+}
+
+type Error struct {
+	Message     string  `json:"message"`
+	Description *string `json:"description,omitempty"`
+}
+
+func (Error) IsMemberLoginResponse() {}
+
 type Institution struct {
 	UUID  *string `json:"uuid,omitempty"`
 	Label *string `json:"label,omitempty"`
@@ -47,12 +58,15 @@ type Member struct {
 	Name     *string     `json:"name,omitempty"`
 	Password *string     `json:"password,omitempty"`
 	Token    *string     `json:"token,omitempty"`
+	Username *string     `json:"username,omitempty"`
 	MemberOf []*MemberOf `json:"MemberOf,omitempty"`
 }
 
 func (Member) IsBaseIdentification()  {}
 func (this Member) GetUUID() *string  { return this.UUID }
 func (this Member) GetLabel() *string { return this.Label }
+
+func (Member) IsMemberLoginResponse() {}
 
 type MemberOf struct {
 	Role        *string      `json:"role,omitempty"`

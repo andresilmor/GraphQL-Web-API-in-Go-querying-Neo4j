@@ -11,7 +11,7 @@ import (
 type Member = map[string]interface{}
 
 type MemberService interface {
-	MemberLogin(username string, password string) (Member, error)
+	MemberLogin(username string) (Member, error)
 }
 
 type neo4jMemberService struct {
@@ -23,26 +23,24 @@ func NewMemberService(loader *fixtures.FixtureLoader, driver neo4j.Driver) Membe
 	return &neo4jMemberService{loader: loader, driver: driver}
 }
 
-func (ms *neo4jMemberService) MemberLogin(username string, password string) (_ Member, err error) {
+func (ms *neo4jMemberService) MemberLogin(username string) (_ Member, err error) {
 	session := ms.driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 
 	results, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		result, err := tx.Run(fmt.Sprintf(`
-		MATCH (c:Member) WHERE c.username = $username AND c.password = $password
+		MATCH (c:Member) WHERE c.username = $username
 		CALL {
 			OPTIONAL MATCH (i:Institution)<-[w:WORKS_IN]-(c) 
 				WITH w{ .* , institution : PROPERTIES(i)} AS Institution
 				WITH collect(Institution) AS Institutions
 				RETURN Institutions
 		}
-		WITH apoc.map.removeKeys(c {.*}, ['password', 'username']) AS Member, Institutions
+		WITH apoc.map.removeKeys(c {.*}, ['username']) AS Member, Institutions
 		WITH Institutions, Member
 		RETURN {member: Member, institutions: Institutions} as member 
 		`), map[string]interface{}{
 			"username": username,
-			"password": password,
 		})
-
 		if err != nil {
 			return nil, err
 		}
@@ -51,7 +49,7 @@ func (ms *neo4jMemberService) MemberLogin(username string, password string) (_ M
 		if err != nil {
 			return nil, err
 		}
-		println(record)
+
 		member, _ := record.Get("member")
 		return member.(map[string]interface{}), nil
 
@@ -72,8 +70,13 @@ func (ms *neo4jMemberService) MemberLogin(username string, password string) (_ M
 		*/
 
 	})
-	
+
 	session.Close()
-	return results.(Member), nil
+
+	if results == nil {
+		return nil, err
+	}
+
+	return results.(Member), err
 
 }

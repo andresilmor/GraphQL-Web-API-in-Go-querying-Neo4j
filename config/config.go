@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
@@ -27,6 +30,15 @@ func ReadConfig(path string) (*Config, error) {
 		return nil, err
 	}
 	return &config, nil
+}
+
+func LoadEnv(variable string) string {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Some error occured. Err: %s", err)
+	}
+
+	return os.Getenv(variable)
 }
 
 // end::readConfig[]

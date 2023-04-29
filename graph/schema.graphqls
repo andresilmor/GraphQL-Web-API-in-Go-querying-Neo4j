@@ -18,6 +18,7 @@ type Member implements BaseIdentification {
   name: String
   password: String
   token: String
+  username: String
   MemberOf: [MemberOf]
 
 }
@@ -63,6 +64,16 @@ type MedicationToTake {
 }
 
 # ===================================================================== #
+# Error Handling                                                        #
+# ===================================================================== #
+
+type Error {
+  message: String!
+  description: String
+
+}
+
+# ===================================================================== #
 # Input                                                                 #
 # ===================================================================== #
 
@@ -73,11 +84,19 @@ input LoginCredentials {
 }
 
 # ===================================================================== #
+# Union                                                                 #
+# ===================================================================== #
+
+union MemberLoginResponse = Member | Error
+
+
+# ===================================================================== #
 # Query                                                                 #
 # ===================================================================== #
 
 type Query {
-  MemberLogin(username: String!, password: String!): Member
+  MemberLogin(loginCredentials: LoginCredentials): MemberLoginResponse
+
   MedicationToTake(isAvailable: Boolean!, pacientID: String, memberID: String, institutionID: String) : [MedicationToTake]
 
 }
