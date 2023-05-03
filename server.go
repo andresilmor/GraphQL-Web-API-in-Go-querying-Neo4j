@@ -2,9 +2,13 @@ package main
 
 import (
 	"CareXR_WebService/graph"
+	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -61,6 +65,30 @@ func GinContextFromContext(ctx context.Context) (*gin.Context, error) {
 	return gc, nil
 }
 
+func executeQuery(c *gin.Context) {
+	jsonData, _ := ioutil.ReadAll(c.Request.Body)
+
+	request, err := http.NewRequest("POST", "http://localhost:8000/graphql", bytes.NewBuffer(jsonData))
+	if err != nil {
+		panic(err)
+	}
+
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	res, err := client.Do(request)
+	if err != nil {
+		panic(err)
+	}
+
+	defer res.Body.Close()
+
+	responseRaw, err := io.ReadAll(res.Body)
+
+	c.JSON(200, string(responseRaw))
+
+}
+
 func main() {
 	settings, err := config.ReadConfig("config.json")
 	ioutils.PanicOnError(err)
@@ -91,7 +119,10 @@ func main() {
 
 	srv.Use(GinContextToContextMiddleware())
 
-	srv.POST("/api", graphqlHandler())
+	srv.POST("/graphql", graphqlHandler())
+
+	srv.POST("/api", executeQuery)
+
 	srv.GET("/view", playgroundHandler())
 	srv.Run(":8000")
 

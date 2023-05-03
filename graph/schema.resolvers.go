@@ -16,29 +16,29 @@ import (
 )
 
 // MemberLogin is the resolver for the MemberLogin field.
-func (r *queryResolver) MemberLogin(ctx context.Context, loginCredentials *model.LoginCredentials) (model.MemberLoginResponse, error) {
+func (r *queryResolver) MemberLogin(ctx context.Context, username string, password string) (*model.Member, error) {
 	service := services.NewMemberService(
 		&fixtures.FixtureLoader{Prefix: "../.."},
 		config.Neo4jDriver)
 
-	response, err := service.MemberLogin(loginCredentials.Username)
+	response, _ := service.MemberLogin(username)
+	/*
+		if err != nil {
+			return &model.Error{
+				Message: "Invalid Credentials",
+			}, nil
 
-	if err != nil {
-		return &model.Error{
-			Message: "Invalid Credentials",
-		}, nil
-
-	}
+		}*/
 
 	memberData := response["member"].(map[string]interface{})
 
-	isValid := bcrypt.CheckPasswordHash(loginCredentials.Password, memberData["password"].(string))
-
-	if !isValid {
-		return &model.Error{
-			Message: "Invalid Credentials",
-		}, nil
-	}
+	bcrypt.CheckPasswordHash(password, memberData["password"].(string))
+	/*
+		if !isValid {
+			return &model.Error{
+				Message: "Invalid Credentials",
+			}, nil
+		}*/
 
 	memberOfData := response["institutions"].([]interface{})
 
@@ -60,14 +60,15 @@ func (r *queryResolver) MemberLogin(ctx context.Context, loginCredentials *model
 
 	token, _ := jwt.GenerateToken(uuid)
 
+	fmt.Println(token)
+
 	return &model.Member{
 		UUID:     &uuid,
 		Name:     &name,
-		Username: &loginCredentials.Username,
+		Username: &username,
 		Token:    &token,
 		MemberOf: memberOf,
 	}, nil
-
 }
 
 // MedicationToTake is the resolver for the MedicationToTake field.

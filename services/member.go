@@ -28,7 +28,7 @@ func (ms *neo4jMemberService) MemberLogin(username string) (_ Member, err error)
 
 	results, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		result, err := tx.Run(fmt.Sprintf(`
-		MATCH (c:Member) WHERE c.username = $username
+		MATCH (c:Member {username: $username})
 		CALL {
 			OPTIONAL MATCH (i:Institution)<-[w:WORKS_IN]-(c) 
 				WITH w{ .* , institution : PROPERTIES(i)} AS Institution
