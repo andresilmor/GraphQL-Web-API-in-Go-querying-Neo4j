@@ -91,12 +91,12 @@ type ComplexityRoot struct {
 
 	Query struct {
 		MedicationToTake func(childComplexity int, isAvailable bool, pacientID *string, memberID *string, institutionID *string) int
-		MemberLogin      func(childComplexity int, username string, password string) int
+		MemberLogin      func(childComplexity int, loginCredentials *model.LoginCredentials) int
 	}
 }
 
 type QueryResolver interface {
-	MemberLogin(ctx context.Context, username string, password string) (*model.Member, error)
+	MemberLogin(ctx context.Context, loginCredentials *model.LoginCredentials) (model.MemberLoginResponse, error)
 	MedicationToTake(ctx context.Context, isAvailable bool, pacientID *string, memberID *string, institutionID *string) ([]*model.MedicationToTake, error)
 }
 
@@ -312,7 +312,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.MemberLogin(childComplexity, args["username"].(string), args["password"].(string)), true
+		return e.complexity.Query.MemberLogin(childComplexity, args["loginCredentials"].(*model.LoginCredentials)), true
 
 	}
 	return 0, false
@@ -432,24 +432,15 @@ func (ec *executionContext) field_Query_MedicationToTake_args(ctx context.Contex
 func (ec *executionContext) field_Query_MemberLogin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["username"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 *model.LoginCredentials
+	if tmp, ok := rawArgs["loginCredentials"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("loginCredentials"))
+		arg0, err = ec.unmarshalOLoginCredentials2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐLoginCredentials(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["username"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["password"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["password"] = arg1
+	args["loginCredentials"] = arg0
 	return args, nil
 }
 
@@ -1570,7 +1561,7 @@ func (ec *executionContext) _Query_MemberLogin(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().MemberLogin(rctx, fc.Args["username"].(string), fc.Args["password"].(string))
+		return ec.resolvers.Query().MemberLogin(rctx, fc.Args["loginCredentials"].(*model.LoginCredentials))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1579,9 +1570,9 @@ func (ec *executionContext) _Query_MemberLogin(ctx context.Context, field graphq
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Member)
+	res := resTmp.(model.MemberLoginResponse)
 	fc.Result = res
-	return ec.marshalOMember2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐMember(ctx, field.Selections, res)
+	return ec.marshalOMemberLoginResponse2CareXR_WebServiceᚋgraphᚋmodelᚐMemberLoginResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_MemberLogin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1591,23 +1582,7 @@ func (ec *executionContext) fieldContext_Query_MemberLogin(ctx context.Context, 
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "uuid":
-				return ec.fieldContext_Member_uuid(ctx, field)
-			case "label":
-				return ec.fieldContext_Member_label(ctx, field)
-			case "name":
-				return ec.fieldContext_Member_name(ctx, field)
-			case "password":
-				return ec.fieldContext_Member_password(ctx, field)
-			case "token":
-				return ec.fieldContext_Member_token(ctx, field)
-			case "username":
-				return ec.fieldContext_Member_username(ctx, field)
-			case "MemberOf":
-				return ec.fieldContext_Member_MemberOf(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Member", field.Name)
+			return nil, errors.New("field of type MemberLoginResponse does not have child fields")
 		},
 	}
 	defer func() {
@@ -4676,6 +4651,14 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	return res
 }
 
+func (ec *executionContext) unmarshalOLoginCredentials2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐLoginCredentials(ctx context.Context, v interface{}) (*model.LoginCredentials, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputLoginCredentials(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalOMedication2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐMedication(ctx context.Context, sel ast.SelectionSet, v *model.Medication) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -4731,11 +4714,11 @@ func (ec *executionContext) marshalOMedicationToTake2ᚖCareXR_WebServiceᚋgrap
 	return ec._MedicationToTake(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOMember2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐMember(ctx context.Context, sel ast.SelectionSet, v *model.Member) graphql.Marshaler {
+func (ec *executionContext) marshalOMemberLoginResponse2CareXR_WebServiceᚋgraphᚋmodelᚐMemberLoginResponse(ctx context.Context, sel ast.SelectionSet, v model.MemberLoginResponse) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec._Member(ctx, sel, v)
+	return ec._MemberLoginResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOMemberOf2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐMemberOf(ctx context.Context, sel ast.SelectionSet, v []*model.MemberOf) graphql.Marshaler {

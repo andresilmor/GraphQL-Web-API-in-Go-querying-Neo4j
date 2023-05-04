@@ -8,41 +8,42 @@ import (
 	"CareXR_WebService/config"
 	"CareXR_WebService/fixtures"
 	"CareXR_WebService/graph/model"
-	"CareXR_WebService/pkg/bcrypt"
 	"CareXR_WebService/pkg/jwt"
 	"CareXR_WebService/services"
 	"context"
 	"fmt"
+
+	"CareXR_WebService/pkg/bcrypt"
+
+	"github.com/neo4j/neo4j-go-driver/v5/neo4j/dbtype"
 )
 
 // MemberLogin is the resolver for the MemberLogin field.
-func (r *queryResolver) MemberLogin(ctx context.Context, username string, password string) (*model.Member, error) {
+func (r *queryResolver) MemberLogin(ctx context.Context, loginCredentials *model.LoginCredentials) (model.MemberLoginResponse, error) {
 	service := services.NewMemberService(
 		&fixtures.FixtureLoader{Prefix: "../.."},
 		config.Neo4jDriver)
 
-	response, _ := service.MemberLogin(username)
-	/*
-		if err != nil {
-			return &model.Error{
-				Message: "Invalid Credentials",
-			}, nil
+	response, err := service.MemberLogin(loginCredentials.Username)
 
-		}*/
+	if err != nil {
+		return &model.Error{
+			Message: "Invalid Credentials",
+		}, nil
 
-	memberData := response["member"].(map[string]interface{})
+	}
 
-	bcrypt.CheckPasswordHash(password, memberData["password"].(string))
-	/*
-		if !isValid {
-			return &model.Error{
-				Message: "Invalid Credentials",
-			}, nil
-		}*/
+	memberData := response["member"].(dbtype.Node).Props
 
-	memberOfData := response["institutions"].([]interface{})
+	isValid := bcrypt.CheckPasswordHash(loginCredentials.Password, memberData["password"].(string))
+	if !isValid {
+		return &model.Error{
+			Message: "Invalid Credentials",
+		}, nil
+	}
 
 	memberOf := []*model.MemberOf{}
+	memberOfData := response["institutions"].([]interface{})
 	for _, element := range memberOfData {
 		role := element.(map[string]interface{})["role"].(string)
 
@@ -60,12 +61,10 @@ func (r *queryResolver) MemberLogin(ctx context.Context, username string, passwo
 
 	token, _ := jwt.GenerateToken(uuid)
 
-	fmt.Println(token)
-
 	return &model.Member{
 		UUID:     &uuid,
 		Name:     &name,
-		Username: &username,
+		Username: &loginCredentials.Username,
 		Token:    &token,
 		MemberOf: memberOf,
 	}, nil

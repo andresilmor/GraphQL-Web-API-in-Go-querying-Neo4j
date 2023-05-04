@@ -35,8 +35,7 @@ func (ms *neo4jMemberService) MemberLogin(username string) (_ Member, err error)
 				WITH collect(Institution) AS Institutions
 				RETURN Institutions
 		}
-		WITH apoc.map.removeKeys(c {.*}, ['username']) AS Member, Institutions
-		WITH Institutions, Member
+		WITH Institutions, c AS Member
 		RETURN {member: Member, institutions: Institutions} as member 
 		`), map[string]interface{}{
 			"username": username,

@@ -95,7 +95,7 @@ union MemberLoginResponse = Member | Error
 # ===================================================================== #
 
 type Query {
-  MemberLogin(username: String!, password: String!): Member
+  MemberLogin(loginCredentials: LoginCredentials): MemberLoginResponse
 
   MedicationToTake(isAvailable: Boolean!, pacientID: String, memberID: String, institutionID: String) : [MedicationToTake]
 

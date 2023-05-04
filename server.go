@@ -119,9 +119,7 @@ func main() {
 
 	srv.Use(GinContextToContextMiddleware())
 
-	srv.POST("/graphql", graphqlHandler())
-
-	srv.POST("/api", executeQuery)
+	srv.POST("/api", graphqlHandler())
 
 	srv.GET("/view", playgroundHandler())
 	srv.Run(":8000")
