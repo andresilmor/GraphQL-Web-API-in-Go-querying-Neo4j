@@ -24,6 +24,8 @@ func (r *queryResolver) MemberLogin(ctx context.Context, loginCredentials *model
 		&fixtures.FixtureLoader{Prefix: "../.."},
 		config.Neo4jDriver)
 
+	fmt.Println(loginCredentials)
+
 	response, err := service.MemberLogin(loginCredentials.Username)
 
 	if err != nil {
