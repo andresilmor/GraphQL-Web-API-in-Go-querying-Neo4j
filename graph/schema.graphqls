@@ -19,6 +19,7 @@ type Member implements BaseIdentification {
   password: String
   token: String
   username: String
+  email: String
   MemberOf: [MemberOf]
 
 }
@@ -78,7 +79,7 @@ type Error {
 # ===================================================================== #
 
 input LoginCredentials {
-  username: String!
+  email: String!
   password: String!
 
 }

@@ -30,7 +30,7 @@ func (this Institution) GetUUID() *string  { return this.UUID }
 func (this Institution) GetLabel() *string { return this.Label }
 
 type LoginCredentials struct {
-	Username string `json:"username"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
@@ -59,6 +59,7 @@ type Member struct {
 	Password *string     `json:"password,omitempty"`
 	Token    *string     `json:"token,omitempty"`
 	Username *string     `json:"username,omitempty"`
+	Email    *string     `json:"email,omitempty"`
 	MemberOf []*MemberOf `json:"MemberOf,omitempty"`
 }
 

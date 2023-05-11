@@ -23,12 +23,12 @@ func NewMemberService(loader *fixtures.FixtureLoader, driver neo4j.Driver) Membe
 	return &neo4jMemberService{loader: loader, driver: driver}
 }
 
-func (ms *neo4jMemberService) MemberLogin(username string) (_ Member, err error) {
+func (ms *neo4jMemberService) MemberLogin(email string) (_ Member, err error) {
 	session := ms.driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 
 	results, err := session.ReadTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		result, err := tx.Run(fmt.Sprintf(`
-		MATCH (c:Member {username: $username})
+		MATCH (c:Member {email: $email})
 		CALL {
 			OPTIONAL MATCH (i:Institution)<-[w:WORKS_IN]-(c) 
 				WITH w{ .* , institution : PROPERTIES(i)} AS Institution
@@ -38,7 +38,7 @@ func (ms *neo4jMemberService) MemberLogin(username string) (_ Member, err error)
 		WITH Institutions, c AS Member
 		RETURN {member: Member, institutions: Institutions} as member 
 		`), map[string]interface{}{
-			"username": username,
+			"email": email,
 		})
 		if err != nil {
 			return nil, err

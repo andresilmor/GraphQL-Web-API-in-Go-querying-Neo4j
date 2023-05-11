@@ -18,6 +18,8 @@ import (
 
 	"CareXR_WebService/config"
 	"CareXR_WebService/ioutils"
+
+	"github.com/gin-contrib/cors"
 )
 
 const defaultPort = "8000"
@@ -46,6 +48,11 @@ func GinContextToContextMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := context.WithValue(c.Request.Context(), "GinContextKey", c)
 		c.Request = c.Request.WithContext(ctx)
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
 		c.Next()
 	}
 }
@@ -115,14 +122,22 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := gin.Default()
+	router := gin.Default()
 
-	srv.Use(GinContextToContextMiddleware())
+	router.Use(GinContextToContextMiddleware())
 
-	srv.POST("/api", graphqlHandler())
+	router.POST("/api", graphqlHandler())
 
-	srv.GET("/view", playgroundHandler())
-	srv.Run(":8000")
+	router.GET("/view", playgroundHandler())
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:<your_port>"},
+		AllowMethods:     []string{http.MethodGet, http.MethodPatch, http.MethodPost, http.MethodHead, http.MethodDelete, http.MethodOptions},
+		AllowHeaders:     []string{"Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+	router.Run(":8000")
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 
