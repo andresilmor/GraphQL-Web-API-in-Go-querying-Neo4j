@@ -2,8 +2,10 @@ package jwt
 
 import (
 	"CareXR_WebService/config"
+
 	"log"
-	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -12,14 +14,23 @@ var (
 	SecretKey = []byte(config.LoadEnv("API_SECRET_KEY"))
 )
 
+type ClaimType interface {
+	string | int64 | []string | any
+}
+
 // GenerateToken generates a jwt token and assign a username to it's claims and return it
-func GenerateToken(uuid string) (string, error) {
+func GenerateToken(tokenContent map[string]any) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	/* Create a map to store our claims */
 	claims := token.Claims.(jwt.MapClaims)
 	/* Set token claims */
-	claims["uuid"] = uuid
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+
+	for key, value := range tokenContent {
+		claims[key] = value
+
+	}
+
+	claims["jti"] = uuid.New()
 	tokenString, err := token.SignedString(SecretKey)
 	if err != nil {
 		log.Fatal("Error in Generating key")

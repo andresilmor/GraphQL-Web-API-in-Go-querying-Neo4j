@@ -13,6 +13,7 @@ import (
 	"CareXR_WebService/services"
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j/dbtype"
 )
@@ -61,7 +62,16 @@ func (r *queryResolver) MemberLogin(ctx context.Context, loginCredentials *model
 	name := memberData["name"].(string)
 	username := memberData["username"].(string)
 
-	token, _ := jwt.GenerateToken(uuid)
+	tokenContent := map[string]any{
+		"iss": "CareXR",
+		"sub": &loginCredentials.Email,
+		"aud": []string{"member"},
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
+		"nbf": time.Now().Unix(),
+		"iat": time.Now().Unix(),
+	}
+
+	token, _ := jwt.GenerateToken(tokenContent)
 
 	return &model.Member{
 		UUID:     &uuid,

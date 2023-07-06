@@ -2,23 +2,25 @@ package main
 
 import (
 	"CareXR_WebService/graph"
-	"bytes"
 	"context"
+	"crypto/md5"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 
 	"CareXR_WebService/config"
 	"CareXR_WebService/ioutils"
+	"CareXR_WebService/pkg/jwt"
+	"CareXR_WebService/pkg/randStr"
 
 	"github.com/gin-contrib/cors"
 )
@@ -45,6 +47,7 @@ func playgroundHandler() gin.HandlerFunc {
 	}
 }
 
+/*
 func GinContextToContextMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
@@ -59,7 +62,7 @@ func GinContextToContextMiddleware() gin.HandlerFunc {
 
 		c.Next()
 	}
-}
+}*/
 
 func GinContextFromContext(ctx context.Context) (*gin.Context, error) {
 	ginContext := ctx.Value("GinContextKey")
@@ -76,6 +79,7 @@ func GinContextFromContext(ctx context.Context) (*gin.Context, error) {
 	return gc, nil
 }
 
+/*
 func executeQuery(c *gin.Context) {
 	jsonData, _ := ioutil.ReadAll(c.Request.Body)
 
@@ -97,6 +101,38 @@ func executeQuery(c *gin.Context) {
 	responseRaw, err := io.ReadAll(res.Body)
 
 	c.JSON(200, string(responseRaw))
+
+}*/
+
+func generateAuthChannel(ctx *gin.Context) {
+
+	msec := time.Now().UnixNano() / 1000000
+	msecString := strconv.FormatInt(msec, 16)
+	randString, _ := randStr.GenerateRandomString(32)
+	channel := msecString + randString
+
+	hasher := md5.New()
+	hasher.Write([]byte(channel))
+
+	tokenContent := map[string]any{
+		"iss": "CareXR",
+		"sub": "",
+		"aud": []string{"member"},
+		"exp": time.Now().Add(time.Minute * 1).Unix(),
+		"nbf": time.Now().Unix(),
+		"iat": time.Now().Unix(),
+		"jti": uuid.New(),
+		"context": map[string]any{
+			"channel": &channel,
+		},
+	}
+
+	token, _ := jwt.GenerateToken(tokenContent)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"token":   token, // cast it to string before showing
+		"channel": channel,
+	})
 
 }
 
@@ -128,8 +164,6 @@ func main() {
 
 	router := gin.Default()
 
-	router.Use(GinContextToContextMiddleware())
-
 	router.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
 		AllowHeaders:     []string{"Authorization", "Origin", "Content-Length", "Content-Type"},
@@ -141,6 +175,8 @@ func main() {
 	router.POST("/api", graphqlHandler())
 
 	router.GET("/view", playgroundHandler())
+
+	router.GET("/authChannel", generateAuthChannel)
 
 	router.Run(":8000")
 
