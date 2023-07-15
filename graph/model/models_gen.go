@@ -8,6 +8,10 @@ type BaseIdentification interface {
 	GetLabel() *string
 }
 
+type Get360HotspotResponse interface {
+	IsGet360HotspotResponse()
+}
+
 type MemberLoginResponse interface {
 	IsMemberLoginResponse()
 }
@@ -18,6 +22,46 @@ type Error struct {
 }
 
 func (Error) IsMemberLoginResponse() {}
+
+func (Error) IsGet360HotspotResponse() {}
+
+type Hotspot struct {
+	UUID        *string         `json:"uuid,omitempty"`
+	Label       *string         `json:"label,omitempty"`
+	Image       *string         `json:"image,omitempty"`
+	PartOf      []*string       `json:"partOf,omitempty"`
+	DirectedFor []*string       `json:"directedFor,omitempty"`
+	Meta        *HotspotMeta    `json:"meta,omitempty"`
+	Mapping     []*HotspotPoint `json:"mapping,omitempty"`
+}
+
+func (Hotspot) IsBaseIdentification()  {}
+func (this Hotspot) GetUUID() *string  { return this.UUID }
+func (this Hotspot) GetLabel() *string { return this.Label }
+
+func (Hotspot) IsGet360HotspotResponse() {}
+
+type HotspotMeta struct {
+	CreatedBy *string `json:"createdBy,omitempty"`
+	CreatedAt *string `json:"createdAt,omitempty"`
+	UpdatedAt *string `json:"updatedAt,omitempty"`
+	IsActive  *bool   `json:"isActive,omitempty"`
+}
+
+type HotspotPoint struct {
+	Transform *HotspotPointTransform `json:"transform,omitempty"`
+	Data      *HotspotPointData      `json:"data,omitempty"`
+}
+
+type HotspotPointData struct {
+	Alias   *string   `json:"alias,omitempty"`
+	Content []*string `json:"content,omitempty"`
+}
+
+type HotspotPointTransform struct {
+	Position *Position `json:"position,omitempty"`
+	Scale    *Scale    `json:"scale,omitempty"`
+}
 
 type Institution struct {
 	UUID  *string `json:"uuid,omitempty"`
@@ -60,7 +104,7 @@ type Member struct {
 	Token    *string     `json:"token,omitempty"`
 	Username *string     `json:"username,omitempty"`
 	Email    *string     `json:"email,omitempty"`
-	MemberOf []*MemberOf `json:"MemberOf,omitempty"`
+	MemberOf []*MemberOf `json:"memberOf,omitempty"`
 }
 
 func (Member) IsBaseIdentification()  {}
@@ -83,3 +127,14 @@ type Pacient struct {
 func (Pacient) IsBaseIdentification()  {}
 func (this Pacient) GetUUID() *string  { return this.UUID }
 func (this Pacient) GetLabel() *string { return this.Label }
+
+type Position struct {
+	X *float64 `json:"x,omitempty"`
+	Y *float64 `json:"y,omitempty"`
+	Z *float64 `json:"z,omitempty"`
+}
+
+type Scale struct {
+	Width  *float64 `json:"width,omitempty"`
+	Height *float64 `json:"height,omitempty"`
+}

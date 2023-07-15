@@ -79,6 +79,10 @@ func GinContextFromContext(ctx context.Context) (*gin.Context, error) {
 	return gc, nil
 }
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 /*
 func executeQuery(c *gin.Context) {
 	jsonData, _ := ioutil.ReadAll(c.Request.Body)
@@ -163,14 +167,16 @@ func main() {
 	}
 
 	router := gin.Default()
+	/*
+		router.Use(cors.New(cors.Config{
+			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+			AllowHeaders:     []string{"Authorization", "Origin", "Content-Length", "Content-Type"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+			AllowAllOrigins:  true,
+		}))*/
 
-	router.Use(cors.New(cors.Config{
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
-		AllowHeaders:     []string{"Authorization", "Origin", "Content-Length", "Content-Type"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-		AllowAllOrigins:  true,
-	}))
+	router.Use(cors.Default())
 
 	router.POST("/api", graphqlHandler())
 

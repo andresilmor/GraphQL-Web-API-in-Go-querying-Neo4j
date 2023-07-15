@@ -20,7 +20,7 @@ type Member implements BaseIdentification {
   token: String
   username: String
   email: String
-  MemberOf: [MemberOf]
+  memberOf: [MemberOf]
 
 }
 
@@ -65,6 +65,62 @@ type MedicationToTake {
 }
 
 # ===================================================================== #
+# Entities (VR Session Segment)                                           #
+# ===================================================================== #
+
+type Hotspot implements BaseIdentification {
+  uuid: String
+  label: String
+  image: String
+  partOf: [String]
+  directedFor: [String]
+  meta: HotspotMeta
+  mapping: [HotspotPoint]
+
+}
+
+type HotspotMeta {
+  createdBy: String
+  createdAt: String
+  updatedAt: String
+  isActive: Boolean
+
+}
+
+type HotspotPoint {
+  transform: HotspotPointTransform
+  data: HotspotPointData
+
+}
+
+type HotspotPointTransform {
+  position: Position
+  scale: Scale
+
+}
+
+type Position {
+  x: Float
+  y: Float
+  z: Float
+
+}
+
+type Scale {
+  width: Float
+  height: Float
+
+}
+
+type HotspotPointData {
+  alias: String
+  content: [String]
+
+}
+
+
+
+# ===================================================================== #
 # Error Handling                                                        #
 # ===================================================================== #
 
@@ -89,7 +145,7 @@ input LoginCredentials {
 # ===================================================================== #
 
 union MemberLoginResponse = Member | Error
-
+union Get360HotspotResponse = Hotspot | Error
 
 # ===================================================================== #
 # Query                                                                 #
@@ -99,6 +155,8 @@ type Query {
   MemberLogin(loginCredentials: LoginCredentials): MemberLoginResponse
 
   MedicationToTake(isAvailable: Boolean!, pacientID: String, memberID: String, institutionID: String) : [MedicationToTake]
+
+  Get360Hotspot(institutionID: String, hotspotID: String, directedFor:[String], externalFormat: Boolean) : [Hotspot]
 
 }
 
