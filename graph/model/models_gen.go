@@ -8,12 +8,19 @@ type BaseIdentification interface {
 	GetLabel() *string
 }
 
-type Get360HotspotResponse interface {
-	IsGet360HotspotResponse()
+type GetPanoramicImagesResponse interface {
+	IsGetPanoramicImagesResponse()
 }
 
 type MemberLoginResponse interface {
 	IsMemberLoginResponse()
+}
+
+type BoundingBox struct {
+	X      *int `json:"x,omitempty"`
+	Y      *int `json:"y,omitempty"`
+	Width  *int `json:"width,omitempty"`
+	Height *int `json:"height,omitempty"`
 }
 
 type Error struct {
@@ -23,34 +30,11 @@ type Error struct {
 
 func (Error) IsMemberLoginResponse() {}
 
-func (Error) IsGet360HotspotResponse() {}
-
-type Hotspot struct {
-	UUID        *string         `json:"uuid,omitempty"`
-	Label       *string         `json:"label,omitempty"`
-	Image       *string         `json:"image,omitempty"`
-	PartOf      []*string       `json:"partOf,omitempty"`
-	DirectedFor []*string       `json:"directedFor,omitempty"`
-	Meta        *HotspotMeta    `json:"meta,omitempty"`
-	Mapping     []*HotspotPoint `json:"mapping,omitempty"`
-}
-
-func (Hotspot) IsBaseIdentification()  {}
-func (this Hotspot) GetUUID() *string  { return this.UUID }
-func (this Hotspot) GetLabel() *string { return this.Label }
-
-func (Hotspot) IsGet360HotspotResponse() {}
-
-type HotspotMeta struct {
-	CreatedBy *string `json:"createdBy,omitempty"`
-	CreatedAt *string `json:"createdAt,omitempty"`
-	UpdatedAt *string `json:"updatedAt,omitempty"`
-	IsActive  *bool   `json:"isActive,omitempty"`
-}
+func (Error) IsGetPanoramicImagesResponse() {}
 
 type HotspotPoint struct {
-	Transform *HotspotPointTransform `json:"transform,omitempty"`
-	Data      *HotspotPointData      `json:"data,omitempty"`
+	BoundingBox *BoundingBox      `json:"boundingBox,omitempty"`
+	Data        *HotspotPointData `json:"data,omitempty"`
 }
 
 type HotspotPointData struct {
@@ -127,6 +111,31 @@ type Pacient struct {
 func (Pacient) IsBaseIdentification()  {}
 func (this Pacient) GetUUID() *string  { return this.UUID }
 func (this Pacient) GetLabel() *string { return this.Label }
+
+type PanoramicSession struct {
+	UUID        *string               `json:"uuid,omitempty"`
+	Label       *string               `json:"label,omitempty"`
+	ImageUID    *string               `json:"imageUID,omitempty"`
+	PartOf      []*string             `json:"partOf,omitempty"`
+	DirectedFor []*string             `json:"directedFor,omitempty"`
+	Meta        *PanoramicSessionMeta `json:"meta,omitempty"`
+	Mapping     []*HotspotPoint       `json:"mapping,omitempty"`
+	ImageWidth  *int                  `json:"imageWidth,omitempty"`
+	ImageHeight *int                  `json:"imageHeight,omitempty"`
+}
+
+func (PanoramicSession) IsBaseIdentification()  {}
+func (this PanoramicSession) GetUUID() *string  { return this.UUID }
+func (this PanoramicSession) GetLabel() *string { return this.Label }
+
+func (PanoramicSession) IsGetPanoramicImagesResponse() {}
+
+type PanoramicSessionMeta struct {
+	CreatedBy *string `json:"createdBy,omitempty"`
+	CreatedAt *string `json:"createdAt,omitempty"`
+	UpdatedAt *string `json:"updatedAt,omitempty"`
+	IsActive  *bool   `json:"isActive,omitempty"`
+}
 
 type Position struct {
 	X *float64 `json:"x,omitempty"`

@@ -10,8 +10,9 @@ import (
 	"CareXR_WebService/graph/model"
 	"CareXR_WebService/pkg/bcrypt"
 	"CareXR_WebService/pkg/jwt"
-	"CareXR_WebService/services/mongoDB"
 	"CareXR_WebService/services/neo4j"
+
+	"CareXR_WebService/services/mongoDB"
 	"context"
 	"fmt"
 	"time"
@@ -90,11 +91,11 @@ func (r *queryResolver) MedicationToTake(ctx context.Context, isAvailable bool, 
 	panic(fmt.Errorf("not implemented: MedicationToTake - MedicationToTake"))
 }
 
-// Get360Hotspot is the resolver for the Get360Hotspot field.
-func (r *queryResolver) Get360Hotspot(ctx context.Context, institutionID *string, hotspotID *string, directedFor []*string, externalFormat *bool) ([]*model.Hotspot, error) {
-	list := mongoDB.Get360images(*institutionID, *hotspotID, directedFor)
+// GetPanoramicSessions is the resolver for the GetPanoramicSessions field.
+func (r *queryResolver) GetPanoramicSessions(ctx context.Context, institutionID *string, panoramicID *string, directedFor []*string, externalFormat *bool) ([]*model.PanoramicSession, error) {
+	list := mongoDB.GetPanoramicImages(*institutionID, *panoramicID, directedFor)
 
-	hotspotsList := []*model.Hotspot{}
+	hotspotsList := []*model.PanoramicSession{}
 
 	service := neo4j.NewMemberService(
 		&fixtures.FixtureLoader{Prefix: "../.."},
@@ -117,31 +118,27 @@ func (r *queryResolver) Get360Hotspot(ctx context.Context, institutionID *string
 			}
 
 			mapping = append(mapping, &model.HotspotPoint{
-				Transform: &model.HotspotPointTransform{
-					Position: &model.Position{
-						X: &mappingValue.Transform.Position.X,
-						Y: &mappingValue.Transform.Position.Y,
-						Z: &mappingValue.Transform.Position.Z,
-					},
-					Scale: &model.Scale{
-						Width:  &mappingValue.Transform.Scale.Width,
-						Height: &mappingValue.Transform.Scale.Height,
-					},
+				BoundingBox: &model.BoundingBox{
+					X:      &mappingValue.BoundingBox.X,
+					Y:      &mappingValue.BoundingBox.Y,
+					Width:  &mappingValue.BoundingBox.Width,
+					Height: &mappingValue.BoundingBox.Height,
 				},
 				Data: &mappingData,
 			})
 
 		}
 
-		hotspotsList = append(hotspotsList, &model.Hotspot{
+		hotspotsList = append(hotspotsList, &model.PanoramicSession{
 			UUID:  &value.UUID,
 			Label: &value.Label,
-			Meta: &model.HotspotMeta{
+			Meta: &model.PanoramicSessionMeta{
 				CreatedAt: &value.Meta.CreatedAt,
 				UpdatedAt: &value.Meta.UpdatedAt,
 				CreatedBy: &creator,
 			},
-			Mapping: mapping,
+			ImageWidth: &value.ImageWidth,
+			Mapping:    mapping,
 		})
 
 	}

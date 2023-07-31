@@ -11,17 +11,12 @@ import (
 )
 
 type Mapping struct {
-	Transform struct {
-		Position struct {
-			X float64 `bson:"X"`
-			Y float64 `bson:"Y"`
-			Z float64 `bson:"Z"`
-		} `bson:"position"`
-		Scale struct {
-			Width  float64 `bson:"width"`
-			Height float64 `bson:"height"`
-		} `bson:"scale"`
-	} `bson:"transform"`
+	BoundingBox struct {
+		X      int `bson:"x"`
+		Y      int `bson:"y"`
+		Width  int `bson:"width"`
+		Height int `bson:"height"`
+	} `bson:"boundingBox"`
 	Data struct {
 		Alias   string   `bson:"alias"`
 		Content []string `bson:"content"`
@@ -41,9 +36,11 @@ type Hotspot struct {
 	DirectedFor []string  `bson:"directedFor"`
 	ImageBytes  string    `bson:"imageBytes"`
 	Mapping     []Mapping `bson:"mapping"`
+	ImageHeight int       `bson:"imageHeight"`
+	ImageWidth  int       `bson:"imageWidth"`
 }
 
-func Get360images(institutionUUID string, hotspotUUID string, directedFor []*string) []Hotspot {
+func GetPanoramicImages(institutionUUID string, hotspotUUID string, directedFor []*string) []Hotspot {
 	uri := "mongodb+srv://andresilmor:project-greenhealth@carexr-mongodb-cluster.mcnxmz7.mongodb.net/?retryWrites=true&w=majority"
 	if uri == "" {
 		log.Fatal("You must set your 'MONGODB_URI' environmental variable. See\n\t https://www.mongodb.com/docs/drivers/go/current/usage-examples/#environment-variable")

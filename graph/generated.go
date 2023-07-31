@@ -43,31 +43,21 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	BoundingBox struct {
+		Height func(childComplexity int) int
+		Width  func(childComplexity int) int
+		X      func(childComplexity int) int
+		Y      func(childComplexity int) int
+	}
+
 	Error struct {
 		Description func(childComplexity int) int
 		Message     func(childComplexity int) int
 	}
 
-	Hotspot struct {
-		DirectedFor func(childComplexity int) int
-		Image       func(childComplexity int) int
-		Label       func(childComplexity int) int
-		Mapping     func(childComplexity int) int
-		Meta        func(childComplexity int) int
-		PartOf      func(childComplexity int) int
-		UUID        func(childComplexity int) int
-	}
-
-	HotspotMeta struct {
-		CreatedAt func(childComplexity int) int
-		CreatedBy func(childComplexity int) int
-		IsActive  func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
-	}
-
 	HotspotPoint struct {
-		Data      func(childComplexity int) int
-		Transform func(childComplexity int) int
+		BoundingBox func(childComplexity int) int
+		Data        func(childComplexity int) int
 	}
 
 	HotspotPointData struct {
@@ -122,6 +112,25 @@ type ComplexityRoot struct {
 		UUID  func(childComplexity int) int
 	}
 
+	PanoramicSession struct {
+		DirectedFor func(childComplexity int) int
+		ImageHeight func(childComplexity int) int
+		ImageUID    func(childComplexity int) int
+		ImageWidth  func(childComplexity int) int
+		Label       func(childComplexity int) int
+		Mapping     func(childComplexity int) int
+		Meta        func(childComplexity int) int
+		PartOf      func(childComplexity int) int
+		UUID        func(childComplexity int) int
+	}
+
+	PanoramicSessionMeta struct {
+		CreatedAt func(childComplexity int) int
+		CreatedBy func(childComplexity int) int
+		IsActive  func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+	}
+
 	Position struct {
 		X func(childComplexity int) int
 		Y func(childComplexity int) int
@@ -129,9 +138,9 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Get360Hotspot    func(childComplexity int, institutionID *string, hotspotID *string, directedFor []*string, externalFormat *bool) int
-		MedicationToTake func(childComplexity int, isAvailable bool, pacientID *string, memberID *string, institutionID *string) int
-		MemberLogin      func(childComplexity int, loginCredentials *model.LoginCredentials) int
+		GetPanoramicSessions func(childComplexity int, institutionID *string, panoramicID *string, directedFor []*string, externalFormat *bool) int
+		MedicationToTake     func(childComplexity int, isAvailable bool, pacientID *string, memberID *string, institutionID *string) int
+		MemberLogin          func(childComplexity int, loginCredentials *model.LoginCredentials) int
 	}
 
 	Scale struct {
@@ -143,7 +152,7 @@ type ComplexityRoot struct {
 type QueryResolver interface {
 	MemberLogin(ctx context.Context, loginCredentials *model.LoginCredentials) (model.MemberLoginResponse, error)
 	MedicationToTake(ctx context.Context, isAvailable bool, pacientID *string, memberID *string, institutionID *string) ([]*model.MedicationToTake, error)
-	Get360Hotspot(ctx context.Context, institutionID *string, hotspotID *string, directedFor []*string, externalFormat *bool) ([]*model.Hotspot, error)
+	GetPanoramicSessions(ctx context.Context, institutionID *string, panoramicID *string, directedFor []*string, externalFormat *bool) ([]*model.PanoramicSession, error)
 }
 
 type executableSchema struct {
@@ -161,6 +170,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "BoundingBox.height":
+		if e.complexity.BoundingBox.Height == nil {
+			break
+		}
+
+		return e.complexity.BoundingBox.Height(childComplexity), true
+
+	case "BoundingBox.width":
+		if e.complexity.BoundingBox.Width == nil {
+			break
+		}
+
+		return e.complexity.BoundingBox.Width(childComplexity), true
+
+	case "BoundingBox.x":
+		if e.complexity.BoundingBox.X == nil {
+			break
+		}
+
+		return e.complexity.BoundingBox.X(childComplexity), true
+
+	case "BoundingBox.y":
+		if e.complexity.BoundingBox.Y == nil {
+			break
+		}
+
+		return e.complexity.BoundingBox.Y(childComplexity), true
+
 	case "Error.description":
 		if e.complexity.Error.Description == nil {
 			break
@@ -175,82 +212,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Error.Message(childComplexity), true
 
-	case "Hotspot.directedFor":
-		if e.complexity.Hotspot.DirectedFor == nil {
+	case "HotspotPoint.boundingBox":
+		if e.complexity.HotspotPoint.BoundingBox == nil {
 			break
 		}
 
-		return e.complexity.Hotspot.DirectedFor(childComplexity), true
-
-	case "Hotspot.image":
-		if e.complexity.Hotspot.Image == nil {
-			break
-		}
-
-		return e.complexity.Hotspot.Image(childComplexity), true
-
-	case "Hotspot.label":
-		if e.complexity.Hotspot.Label == nil {
-			break
-		}
-
-		return e.complexity.Hotspot.Label(childComplexity), true
-
-	case "Hotspot.mapping":
-		if e.complexity.Hotspot.Mapping == nil {
-			break
-		}
-
-		return e.complexity.Hotspot.Mapping(childComplexity), true
-
-	case "Hotspot.meta":
-		if e.complexity.Hotspot.Meta == nil {
-			break
-		}
-
-		return e.complexity.Hotspot.Meta(childComplexity), true
-
-	case "Hotspot.partOf":
-		if e.complexity.Hotspot.PartOf == nil {
-			break
-		}
-
-		return e.complexity.Hotspot.PartOf(childComplexity), true
-
-	case "Hotspot.uuid":
-		if e.complexity.Hotspot.UUID == nil {
-			break
-		}
-
-		return e.complexity.Hotspot.UUID(childComplexity), true
-
-	case "HotspotMeta.createdAt":
-		if e.complexity.HotspotMeta.CreatedAt == nil {
-			break
-		}
-
-		return e.complexity.HotspotMeta.CreatedAt(childComplexity), true
-
-	case "HotspotMeta.createdBy":
-		if e.complexity.HotspotMeta.CreatedBy == nil {
-			break
-		}
-
-		return e.complexity.HotspotMeta.CreatedBy(childComplexity), true
-
-	case "HotspotMeta.isActive":
-		if e.complexity.HotspotMeta.IsActive == nil {
-			break
-		}
-
-		return e.complexity.HotspotMeta.IsActive(childComplexity), true
-
-	case "HotspotMeta.updatedAt":
-		if e.complexity.HotspotMeta.UpdatedAt == nil {
-			break
-		}
-
-		return e.complexity.HotspotMeta.UpdatedAt(childComplexity), true
+		return e.complexity.HotspotPoint.BoundingBox(childComplexity), true
 
 	case "HotspotPoint.data":
 		if e.complexity.HotspotPoint.Data == nil {
@@ -258,13 +225,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.HotspotPoint.Data(childComplexity), true
-
-	case "HotspotPoint.transform":
-		if e.complexity.HotspotPoint.Transform == nil {
-			break
-		}
-
-		return e.complexity.HotspotPoint.Transform(childComplexity), true
 
 	case "HotspotPointData.alias":
 		if e.complexity.HotspotPointData.Alias == nil {
@@ -462,6 +422,97 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Pacient.UUID(childComplexity), true
 
+	case "PanoramicSession.directedFor":
+		if e.complexity.PanoramicSession.DirectedFor == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSession.DirectedFor(childComplexity), true
+
+	case "PanoramicSession.imageHeight":
+		if e.complexity.PanoramicSession.ImageHeight == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSession.ImageHeight(childComplexity), true
+
+	case "PanoramicSession.imageUID":
+		if e.complexity.PanoramicSession.ImageUID == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSession.ImageUID(childComplexity), true
+
+	case "PanoramicSession.imageWidth":
+		if e.complexity.PanoramicSession.ImageWidth == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSession.ImageWidth(childComplexity), true
+
+	case "PanoramicSession.label":
+		if e.complexity.PanoramicSession.Label == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSession.Label(childComplexity), true
+
+	case "PanoramicSession.mapping":
+		if e.complexity.PanoramicSession.Mapping == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSession.Mapping(childComplexity), true
+
+	case "PanoramicSession.meta":
+		if e.complexity.PanoramicSession.Meta == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSession.Meta(childComplexity), true
+
+	case "PanoramicSession.partOf":
+		if e.complexity.PanoramicSession.PartOf == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSession.PartOf(childComplexity), true
+
+	case "PanoramicSession.uuid":
+		if e.complexity.PanoramicSession.UUID == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSession.UUID(childComplexity), true
+
+	case "PanoramicSessionMeta.createdAt":
+		if e.complexity.PanoramicSessionMeta.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSessionMeta.CreatedAt(childComplexity), true
+
+	case "PanoramicSessionMeta.createdBy":
+		if e.complexity.PanoramicSessionMeta.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSessionMeta.CreatedBy(childComplexity), true
+
+	case "PanoramicSessionMeta.isActive":
+		if e.complexity.PanoramicSessionMeta.IsActive == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSessionMeta.IsActive(childComplexity), true
+
+	case "PanoramicSessionMeta.updatedAt":
+		if e.complexity.PanoramicSessionMeta.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.PanoramicSessionMeta.UpdatedAt(childComplexity), true
+
 	case "Position.x":
 		if e.complexity.Position.X == nil {
 			break
@@ -483,17 +534,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Position.Z(childComplexity), true
 
-	case "Query.Get360Hotspot":
-		if e.complexity.Query.Get360Hotspot == nil {
+	case "Query.GetPanoramicSessions":
+		if e.complexity.Query.GetPanoramicSessions == nil {
 			break
 		}
 
-		args, err := ec.field_Query_Get360Hotspot_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_GetPanoramicSessions_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Get360Hotspot(childComplexity, args["institutionID"].(*string), args["hotspotID"].(*string), args["directedFor"].([]*string), args["externalFormat"].(*bool)), true
+		return e.complexity.Query.GetPanoramicSessions(childComplexity, args["institutionID"].(*string), args["panoramicID"].(*string), args["directedFor"].([]*string), args["externalFormat"].(*bool)), true
 
 	case "Query.MedicationToTake":
 		if e.complexity.Query.MedicationToTake == nil {
@@ -606,7 +657,7 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) field_Query_Get360Hotspot_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_GetPanoramicSessions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *string
@@ -619,14 +670,14 @@ func (ec *executionContext) field_Query_Get360Hotspot_args(ctx context.Context, 
 	}
 	args["institutionID"] = arg0
 	var arg1 *string
-	if tmp, ok := rawArgs["hotspotID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hotspotID"))
+	if tmp, ok := rawArgs["panoramicID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("panoramicID"))
 		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["hotspotID"] = arg1
+	args["panoramicID"] = arg1
 	var arg2 []*string
 	if tmp, ok := rawArgs["directedFor"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("directedFor"))
@@ -758,6 +809,170 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _BoundingBox_x(ctx context.Context, field graphql.CollectedField, obj *model.BoundingBox) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BoundingBox_x(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.X, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BoundingBox_x(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BoundingBox",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BoundingBox_y(ctx context.Context, field graphql.CollectedField, obj *model.BoundingBox) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BoundingBox_y(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Y, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BoundingBox_y(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BoundingBox",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BoundingBox_width(ctx context.Context, field graphql.CollectedField, obj *model.BoundingBox) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BoundingBox_width(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Width, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BoundingBox_width(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BoundingBox",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BoundingBox_height(ctx context.Context, field graphql.CollectedField, obj *model.BoundingBox) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BoundingBox_height(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Height, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BoundingBox_height(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BoundingBox",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Error_message(ctx context.Context, field graphql.CollectedField, obj *model.Error) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Error_message(ctx, field)
 	if err != nil {
@@ -843,8 +1058,8 @@ func (ec *executionContext) fieldContext_Error_description(ctx context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _Hotspot_uuid(ctx context.Context, field graphql.CollectedField, obj *model.Hotspot) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Hotspot_uuid(ctx, field)
+func (ec *executionContext) _HotspotPoint_boundingBox(ctx context.Context, field graphql.CollectedField, obj *model.HotspotPoint) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_HotspotPoint_boundingBox(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -857,7 +1072,7 @@ func (ec *executionContext) _Hotspot_uuid(ctx context.Context, field graphql.Col
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.UUID, nil
+		return obj.BoundingBox, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -866,479 +1081,12 @@ func (ec *executionContext) _Hotspot_uuid(ctx context.Context, field graphql.Col
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*model.BoundingBox)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOBoundingBox2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐBoundingBox(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Hotspot_uuid(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Hotspot",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Hotspot_label(ctx context.Context, field graphql.CollectedField, obj *model.Hotspot) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Hotspot_label(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Label, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Hotspot_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Hotspot",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Hotspot_image(ctx context.Context, field graphql.CollectedField, obj *model.Hotspot) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Hotspot_image(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Image, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Hotspot_image(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Hotspot",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Hotspot_partOf(ctx context.Context, field graphql.CollectedField, obj *model.Hotspot) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Hotspot_partOf(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PartOf, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*string)
-	fc.Result = res
-	return ec.marshalOString2ᚕᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Hotspot_partOf(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Hotspot",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Hotspot_directedFor(ctx context.Context, field graphql.CollectedField, obj *model.Hotspot) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Hotspot_directedFor(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.DirectedFor, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*string)
-	fc.Result = res
-	return ec.marshalOString2ᚕᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Hotspot_directedFor(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Hotspot",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Hotspot_meta(ctx context.Context, field graphql.CollectedField, obj *model.Hotspot) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Hotspot_meta(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Meta, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*model.HotspotMeta)
-	fc.Result = res
-	return ec.marshalOHotspotMeta2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐHotspotMeta(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Hotspot_meta(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Hotspot",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "createdBy":
-				return ec.fieldContext_HotspotMeta_createdBy(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_HotspotMeta_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_HotspotMeta_updatedAt(ctx, field)
-			case "isActive":
-				return ec.fieldContext_HotspotMeta_isActive(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type HotspotMeta", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Hotspot_mapping(ctx context.Context, field graphql.CollectedField, obj *model.Hotspot) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Hotspot_mapping(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Mapping, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*model.HotspotPoint)
-	fc.Result = res
-	return ec.marshalOHotspotPoint2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐHotspotPoint(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Hotspot_mapping(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Hotspot",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "transform":
-				return ec.fieldContext_HotspotPoint_transform(ctx, field)
-			case "data":
-				return ec.fieldContext_HotspotPoint_data(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type HotspotPoint", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _HotspotMeta_createdBy(ctx context.Context, field graphql.CollectedField, obj *model.HotspotMeta) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_HotspotMeta_createdBy(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.CreatedBy, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_HotspotMeta_createdBy(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "HotspotMeta",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _HotspotMeta_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.HotspotMeta) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_HotspotMeta_createdAt(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.CreatedAt, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_HotspotMeta_createdAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "HotspotMeta",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _HotspotMeta_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.HotspotMeta) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_HotspotMeta_updatedAt(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.UpdatedAt, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_HotspotMeta_updatedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "HotspotMeta",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _HotspotMeta_isActive(ctx context.Context, field graphql.CollectedField, obj *model.HotspotMeta) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_HotspotMeta_isActive(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.IsActive, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*bool)
-	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_HotspotMeta_isActive(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "HotspotMeta",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _HotspotPoint_transform(ctx context.Context, field graphql.CollectedField, obj *model.HotspotPoint) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_HotspotPoint_transform(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Transform, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*model.HotspotPointTransform)
-	fc.Result = res
-	return ec.marshalOHotspotPointTransform2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐHotspotPointTransform(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_HotspotPoint_transform(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_HotspotPoint_boundingBox(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "HotspotPoint",
 		Field:      field,
@@ -1346,12 +1094,16 @@ func (ec *executionContext) fieldContext_HotspotPoint_transform(ctx context.Cont
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "position":
-				return ec.fieldContext_HotspotPointTransform_position(ctx, field)
-			case "scale":
-				return ec.fieldContext_HotspotPointTransform_scale(ctx, field)
+			case "x":
+				return ec.fieldContext_BoundingBox_x(ctx, field)
+			case "y":
+				return ec.fieldContext_BoundingBox_y(ctx, field)
+			case "width":
+				return ec.fieldContext_BoundingBox_width(ctx, field)
+			case "height":
+				return ec.fieldContext_BoundingBox_height(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type HotspotPointTransform", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type BoundingBox", field.Name)
 		},
 	}
 	return fc, nil
@@ -2588,6 +2340,555 @@ func (ec *executionContext) fieldContext_Pacient_name(ctx context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _PanoramicSession_uuid(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSession) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSession_uuid(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UUID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSession_uuid(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSession",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PanoramicSession_label(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSession) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSession_label(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Label, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSession_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSession",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PanoramicSession_imageUID(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSession) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSession_imageUID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ImageUID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSession_imageUID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSession",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PanoramicSession_partOf(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSession) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSession_partOf(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PartOf, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*string)
+	fc.Result = res
+	return ec.marshalOString2ᚕᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSession_partOf(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSession",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PanoramicSession_directedFor(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSession) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSession_directedFor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DirectedFor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*string)
+	fc.Result = res
+	return ec.marshalOString2ᚕᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSession_directedFor(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSession",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PanoramicSession_meta(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSession) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSession_meta(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Meta, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.PanoramicSessionMeta)
+	fc.Result = res
+	return ec.marshalOPanoramicSessionMeta2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐPanoramicSessionMeta(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSession_meta(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSession",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "createdBy":
+				return ec.fieldContext_PanoramicSessionMeta_createdBy(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_PanoramicSessionMeta_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_PanoramicSessionMeta_updatedAt(ctx, field)
+			case "isActive":
+				return ec.fieldContext_PanoramicSessionMeta_isActive(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PanoramicSessionMeta", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PanoramicSession_mapping(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSession) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSession_mapping(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Mapping, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.HotspotPoint)
+	fc.Result = res
+	return ec.marshalOHotspotPoint2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐHotspotPoint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSession_mapping(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSession",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "boundingBox":
+				return ec.fieldContext_HotspotPoint_boundingBox(ctx, field)
+			case "data":
+				return ec.fieldContext_HotspotPoint_data(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type HotspotPoint", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PanoramicSession_imageWidth(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSession) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSession_imageWidth(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ImageWidth, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSession_imageWidth(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSession",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PanoramicSession_imageHeight(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSession) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSession_imageHeight(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ImageHeight, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSession_imageHeight(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSession",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PanoramicSessionMeta_createdBy(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSessionMeta) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSessionMeta_createdBy(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedBy, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSessionMeta_createdBy(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSessionMeta",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PanoramicSessionMeta_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSessionMeta) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSessionMeta_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSessionMeta_createdAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSessionMeta",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PanoramicSessionMeta_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSessionMeta) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSessionMeta_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSessionMeta_updatedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSessionMeta",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PanoramicSessionMeta_isActive(ctx context.Context, field graphql.CollectedField, obj *model.PanoramicSessionMeta) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PanoramicSessionMeta_isActive(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsActive, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PanoramicSessionMeta_isActive(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PanoramicSessionMeta",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Position_x(ctx context.Context, field graphql.CollectedField, obj *model.Position) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Position_x(ctx, field)
 	if err != nil {
@@ -2827,8 +3128,8 @@ func (ec *executionContext) fieldContext_Query_MedicationToTake(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_Get360Hotspot(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_Get360Hotspot(ctx, field)
+func (ec *executionContext) _Query_GetPanoramicSessions(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_GetPanoramicSessions(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2841,7 +3142,7 @@ func (ec *executionContext) _Query_Get360Hotspot(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Get360Hotspot(rctx, fc.Args["institutionID"].(*string), fc.Args["hotspotID"].(*string), fc.Args["directedFor"].([]*string), fc.Args["externalFormat"].(*bool))
+		return ec.resolvers.Query().GetPanoramicSessions(rctx, fc.Args["institutionID"].(*string), fc.Args["panoramicID"].(*string), fc.Args["directedFor"].([]*string), fc.Args["externalFormat"].(*bool))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2850,12 +3151,12 @@ func (ec *executionContext) _Query_Get360Hotspot(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Hotspot)
+	res := resTmp.([]*model.PanoramicSession)
 	fc.Result = res
-	return ec.marshalOHotspot2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐHotspot(ctx, field.Selections, res)
+	return ec.marshalOPanoramicSession2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐPanoramicSession(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_Get360Hotspot(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_GetPanoramicSessions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -2864,21 +3165,25 @@ func (ec *executionContext) fieldContext_Query_Get360Hotspot(ctx context.Context
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "uuid":
-				return ec.fieldContext_Hotspot_uuid(ctx, field)
+				return ec.fieldContext_PanoramicSession_uuid(ctx, field)
 			case "label":
-				return ec.fieldContext_Hotspot_label(ctx, field)
-			case "image":
-				return ec.fieldContext_Hotspot_image(ctx, field)
+				return ec.fieldContext_PanoramicSession_label(ctx, field)
+			case "imageUID":
+				return ec.fieldContext_PanoramicSession_imageUID(ctx, field)
 			case "partOf":
-				return ec.fieldContext_Hotspot_partOf(ctx, field)
+				return ec.fieldContext_PanoramicSession_partOf(ctx, field)
 			case "directedFor":
-				return ec.fieldContext_Hotspot_directedFor(ctx, field)
+				return ec.fieldContext_PanoramicSession_directedFor(ctx, field)
 			case "meta":
-				return ec.fieldContext_Hotspot_meta(ctx, field)
+				return ec.fieldContext_PanoramicSession_meta(ctx, field)
 			case "mapping":
-				return ec.fieldContext_Hotspot_mapping(ctx, field)
+				return ec.fieldContext_PanoramicSession_mapping(ctx, field)
+			case "imageWidth":
+				return ec.fieldContext_PanoramicSession_imageWidth(ctx, field)
+			case "imageHeight":
+				return ec.fieldContext_PanoramicSession_imageHeight(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Hotspot", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type PanoramicSession", field.Name)
 		},
 	}
 	defer func() {
@@ -2888,7 +3193,7 @@ func (ec *executionContext) fieldContext_Query_Get360Hotspot(ctx context.Context
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_Get360Hotspot_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_GetPanoramicSessions_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -4951,29 +5256,29 @@ func (ec *executionContext) _BaseIdentification(ctx context.Context, sel ast.Sel
 			return graphql.Null
 		}
 		return ec._Medication(ctx, sel, obj)
-	case model.Hotspot:
-		return ec._Hotspot(ctx, sel, &obj)
-	case *model.Hotspot:
+	case model.PanoramicSession:
+		return ec._PanoramicSession(ctx, sel, &obj)
+	case *model.PanoramicSession:
 		if obj == nil {
 			return graphql.Null
 		}
-		return ec._Hotspot(ctx, sel, obj)
+		return ec._PanoramicSession(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
 }
 
-func (ec *executionContext) _Get360HotspotResponse(ctx context.Context, sel ast.SelectionSet, obj model.Get360HotspotResponse) graphql.Marshaler {
+func (ec *executionContext) _GetPanoramicImagesResponse(ctx context.Context, sel ast.SelectionSet, obj model.GetPanoramicImagesResponse) graphql.Marshaler {
 	switch obj := (obj).(type) {
 	case nil:
 		return graphql.Null
-	case model.Hotspot:
-		return ec._Hotspot(ctx, sel, &obj)
-	case *model.Hotspot:
+	case model.PanoramicSession:
+		return ec._PanoramicSession(ctx, sel, &obj)
+	case *model.PanoramicSession:
 		if obj == nil {
 			return graphql.Null
 		}
-		return ec._Hotspot(ctx, sel, obj)
+		return ec._PanoramicSession(ctx, sel, obj)
 	case model.Error:
 		return ec._Error(ctx, sel, &obj)
 	case *model.Error:
@@ -5013,7 +5318,44 @@ func (ec *executionContext) _MemberLoginResponse(ctx context.Context, sel ast.Se
 
 // region    **************************** object.gotpl ****************************
 
-var errorImplementors = []string{"Error", "MemberLoginResponse", "Get360HotspotResponse"}
+var boundingBoxImplementors = []string{"BoundingBox"}
+
+func (ec *executionContext) _BoundingBox(ctx context.Context, sel ast.SelectionSet, obj *model.BoundingBox) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, boundingBoxImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BoundingBox")
+		case "x":
+
+			out.Values[i] = ec._BoundingBox_x(ctx, field, obj)
+
+		case "y":
+
+			out.Values[i] = ec._BoundingBox_y(ctx, field, obj)
+
+		case "width":
+
+			out.Values[i] = ec._BoundingBox_width(ctx, field, obj)
+
+		case "height":
+
+			out.Values[i] = ec._BoundingBox_height(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var errorImplementors = []string{"Error", "MemberLoginResponse", "GetPanoramicImagesResponse"}
 
 func (ec *executionContext) _Error(ctx context.Context, sel ast.SelectionSet, obj *model.Error) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, errorImplementors)
@@ -5045,92 +5387,6 @@ func (ec *executionContext) _Error(ctx context.Context, sel ast.SelectionSet, ob
 	return out
 }
 
-var hotspotImplementors = []string{"Hotspot", "BaseIdentification", "Get360HotspotResponse"}
-
-func (ec *executionContext) _Hotspot(ctx context.Context, sel ast.SelectionSet, obj *model.Hotspot) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, hotspotImplementors)
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Hotspot")
-		case "uuid":
-
-			out.Values[i] = ec._Hotspot_uuid(ctx, field, obj)
-
-		case "label":
-
-			out.Values[i] = ec._Hotspot_label(ctx, field, obj)
-
-		case "image":
-
-			out.Values[i] = ec._Hotspot_image(ctx, field, obj)
-
-		case "partOf":
-
-			out.Values[i] = ec._Hotspot_partOf(ctx, field, obj)
-
-		case "directedFor":
-
-			out.Values[i] = ec._Hotspot_directedFor(ctx, field, obj)
-
-		case "meta":
-
-			out.Values[i] = ec._Hotspot_meta(ctx, field, obj)
-
-		case "mapping":
-
-			out.Values[i] = ec._Hotspot_mapping(ctx, field, obj)
-
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var hotspotMetaImplementors = []string{"HotspotMeta"}
-
-func (ec *executionContext) _HotspotMeta(ctx context.Context, sel ast.SelectionSet, obj *model.HotspotMeta) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, hotspotMetaImplementors)
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("HotspotMeta")
-		case "createdBy":
-
-			out.Values[i] = ec._HotspotMeta_createdBy(ctx, field, obj)
-
-		case "createdAt":
-
-			out.Values[i] = ec._HotspotMeta_createdAt(ctx, field, obj)
-
-		case "updatedAt":
-
-			out.Values[i] = ec._HotspotMeta_updatedAt(ctx, field, obj)
-
-		case "isActive":
-
-			out.Values[i] = ec._HotspotMeta_isActive(ctx, field, obj)
-
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
 var hotspotPointImplementors = []string{"HotspotPoint"}
 
 func (ec *executionContext) _HotspotPoint(ctx context.Context, sel ast.SelectionSet, obj *model.HotspotPoint) graphql.Marshaler {
@@ -5141,9 +5397,9 @@ func (ec *executionContext) _HotspotPoint(ctx context.Context, sel ast.Selection
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("HotspotPoint")
-		case "transform":
+		case "boundingBox":
 
-			out.Values[i] = ec._HotspotPoint_transform(ctx, field, obj)
+			out.Values[i] = ec._HotspotPoint_boundingBox(ctx, field, obj)
 
 		case "data":
 
@@ -5440,6 +5696,100 @@ func (ec *executionContext) _Pacient(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var panoramicSessionImplementors = []string{"PanoramicSession", "BaseIdentification", "GetPanoramicImagesResponse"}
+
+func (ec *executionContext) _PanoramicSession(ctx context.Context, sel ast.SelectionSet, obj *model.PanoramicSession) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, panoramicSessionImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PanoramicSession")
+		case "uuid":
+
+			out.Values[i] = ec._PanoramicSession_uuid(ctx, field, obj)
+
+		case "label":
+
+			out.Values[i] = ec._PanoramicSession_label(ctx, field, obj)
+
+		case "imageUID":
+
+			out.Values[i] = ec._PanoramicSession_imageUID(ctx, field, obj)
+
+		case "partOf":
+
+			out.Values[i] = ec._PanoramicSession_partOf(ctx, field, obj)
+
+		case "directedFor":
+
+			out.Values[i] = ec._PanoramicSession_directedFor(ctx, field, obj)
+
+		case "meta":
+
+			out.Values[i] = ec._PanoramicSession_meta(ctx, field, obj)
+
+		case "mapping":
+
+			out.Values[i] = ec._PanoramicSession_mapping(ctx, field, obj)
+
+		case "imageWidth":
+
+			out.Values[i] = ec._PanoramicSession_imageWidth(ctx, field, obj)
+
+		case "imageHeight":
+
+			out.Values[i] = ec._PanoramicSession_imageHeight(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var panoramicSessionMetaImplementors = []string{"PanoramicSessionMeta"}
+
+func (ec *executionContext) _PanoramicSessionMeta(ctx context.Context, sel ast.SelectionSet, obj *model.PanoramicSessionMeta) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, panoramicSessionMetaImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PanoramicSessionMeta")
+		case "createdBy":
+
+			out.Values[i] = ec._PanoramicSessionMeta_createdBy(ctx, field, obj)
+
+		case "createdAt":
+
+			out.Values[i] = ec._PanoramicSessionMeta_createdAt(ctx, field, obj)
+
+		case "updatedAt":
+
+			out.Values[i] = ec._PanoramicSessionMeta_updatedAt(ctx, field, obj)
+
+		case "isActive":
+
+			out.Values[i] = ec._PanoramicSessionMeta_isActive(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var positionImplementors = []string{"Position"}
 
 func (ec *executionContext) _Position(ctx context.Context, sel ast.SelectionSet, obj *model.Position) graphql.Marshaler {
@@ -5532,7 +5882,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "Get360Hotspot":
+		case "GetPanoramicSessions":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -5541,7 +5891,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_Get360Hotspot(ctx, field)
+				res = ec._Query_GetPanoramicSessions(ctx, field)
 				return res
 			}
 
@@ -6231,6 +6581,13 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
+func (ec *executionContext) marshalOBoundingBox2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐBoundingBox(ctx context.Context, sel ast.SelectionSet, v *model.BoundingBox) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._BoundingBox(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalOFloat2ᚖfloat64(ctx context.Context, v interface{}) (*float64, error) {
 	if v == nil {
 		return nil, nil
@@ -6245,61 +6602,6 @@ func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel as
 	}
 	res := graphql.MarshalFloatContext(*v)
 	return graphql.WrapContextMarshaler(ctx, res)
-}
-
-func (ec *executionContext) marshalOHotspot2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐHotspot(ctx context.Context, sel ast.SelectionSet, v []*model.Hotspot) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOHotspot2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐHotspot(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	return ret
-}
-
-func (ec *executionContext) marshalOHotspot2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐHotspot(ctx context.Context, sel ast.SelectionSet, v *model.Hotspot) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Hotspot(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOHotspotMeta2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐHotspotMeta(ctx context.Context, sel ast.SelectionSet, v *model.HotspotMeta) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._HotspotMeta(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOHotspotPoint2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐHotspotPoint(ctx context.Context, sel ast.SelectionSet, v []*model.HotspotPoint) graphql.Marshaler {
@@ -6355,13 +6657,6 @@ func (ec *executionContext) marshalOHotspotPointData2ᚖCareXR_WebServiceᚋgrap
 		return graphql.Null
 	}
 	return ec._HotspotPointData(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOHotspotPointTransform2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐHotspotPointTransform(ctx context.Context, sel ast.SelectionSet, v *model.HotspotPointTransform) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._HotspotPointTransform(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOInstitution2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐInstitution(ctx context.Context, sel ast.SelectionSet, v *model.Institution) graphql.Marshaler {
@@ -6503,6 +6798,61 @@ func (ec *executionContext) marshalOMemberOf2ᚖCareXR_WebServiceᚋgraphᚋmode
 		return graphql.Null
 	}
 	return ec._MemberOf(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPanoramicSession2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐPanoramicSession(ctx context.Context, sel ast.SelectionSet, v []*model.PanoramicSession) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOPanoramicSession2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐPanoramicSession(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOPanoramicSession2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐPanoramicSession(ctx context.Context, sel ast.SelectionSet, v *model.PanoramicSession) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PanoramicSession(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPanoramicSessionMeta2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐPanoramicSessionMeta(ctx context.Context, sel ast.SelectionSet, v *model.PanoramicSessionMeta) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._PanoramicSessionMeta(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOPosition2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐPosition(ctx context.Context, sel ast.SelectionSet, v *model.Position) graphql.Marshaler {

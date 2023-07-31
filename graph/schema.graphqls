@@ -68,18 +68,20 @@ type MedicationToTake {
 # Entities (VR Session Segment)                                           #
 # ===================================================================== #
 
-type Hotspot implements BaseIdentification {
+type PanoramicSession implements BaseIdentification {
   uuid: String
   label: String
-  image: String
+  imageUID: String
   partOf: [String]
   directedFor: [String]
-  meta: HotspotMeta
+  meta: PanoramicSessionMeta
   mapping: [HotspotPoint]
+  imageWidth: Int
+  imageHeight: Int
 
 }
 
-type HotspotMeta {
+type PanoramicSessionMeta {
   createdBy: String
   createdAt: String
   updatedAt: String
@@ -87,8 +89,16 @@ type HotspotMeta {
 
 }
 
+type BoundingBox {
+  x: Int
+  y: Int
+  width: Int
+  height: Int
+
+}
+
 type HotspotPoint {
-  transform: HotspotPointTransform
+  boundingBox: BoundingBox
   data: HotspotPointData
 
 }
@@ -145,7 +155,7 @@ input LoginCredentials {
 # ===================================================================== #
 
 union MemberLoginResponse = Member | Error
-union Get360HotspotResponse = Hotspot | Error
+union GetPanoramicImagesResponse = PanoramicSession | Error
 
 # ===================================================================== #
 # Query                                                                 #
@@ -156,7 +166,7 @@ type Query {
 
   MedicationToTake(isAvailable: Boolean!, pacientID: String, memberID: String, institutionID: String) : [MedicationToTake]
 
-  Get360Hotspot(institutionID: String, hotspotID: String, directedFor:[String], externalFormat: Boolean) : [Hotspot]
+  GetPanoramicSessions(institutionID: String, panoramicID: String, directedFor:[String], externalFormat: Boolean) : [PanoramicSession]
 
 }
 
