@@ -138,9 +138,10 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		GetPanoramicSessions func(childComplexity int, institutionID *string, panoramicID *string, directedFor []*string, externalFormat *bool) int
-		MedicationToTake     func(childComplexity int, isAvailable bool, pacientID *string, memberID *string, institutionID *string) int
-		MemberLogin          func(childComplexity int, loginCredentials *model.LoginCredentials) int
+		GetInstitutionPacients func(childComplexity int, institutionID *string) int
+		GetPanoramicSessions   func(childComplexity int, institutionID *string, panoramicID *string, directedFor []*string, externalFormat *bool) int
+		MedicationToTake       func(childComplexity int, isAvailable bool, pacientID *string, memberID *string, institutionID *string) int
+		MemberLogin            func(childComplexity int, loginCredentials *model.LoginCredentials) int
 	}
 
 	Scale struct {
@@ -153,6 +154,7 @@ type QueryResolver interface {
 	MemberLogin(ctx context.Context, loginCredentials *model.LoginCredentials) (model.MemberLoginResponse, error)
 	MedicationToTake(ctx context.Context, isAvailable bool, pacientID *string, memberID *string, institutionID *string) ([]*model.MedicationToTake, error)
 	GetPanoramicSessions(ctx context.Context, institutionID *string, panoramicID *string, directedFor []*string, externalFormat *bool) ([]*model.PanoramicSession, error)
+	GetInstitutionPacients(ctx context.Context, institutionID *string) ([]*model.Pacient, error)
 }
 
 type executableSchema struct {
@@ -534,6 +536,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Position.Z(childComplexity), true
 
+	case "Query.GetInstitutionPacients":
+		if e.complexity.Query.GetInstitutionPacients == nil {
+			break
+		}
+
+		args, err := ec.field_Query_GetInstitutionPacients_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetInstitutionPacients(childComplexity, args["institutionID"].(*string)), true
+
 	case "Query.GetPanoramicSessions":
 		if e.complexity.Query.GetPanoramicSessions == nil {
 			break
@@ -656,6 +670,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Query_GetInstitutionPacients_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["institutionID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("institutionID"))
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["institutionID"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Query_GetPanoramicSessions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -3194,6 +3223,66 @@ func (ec *executionContext) fieldContext_Query_GetPanoramicSessions(ctx context.
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_GetPanoramicSessions_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_GetInstitutionPacients(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_GetInstitutionPacients(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetInstitutionPacients(rctx, fc.Args["institutionID"].(*string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Pacient)
+	fc.Result = res
+	return ec.marshalOPacient2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐPacient(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_GetInstitutionPacients(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "uuid":
+				return ec.fieldContext_Pacient_uuid(ctx, field)
+			case "label":
+				return ec.fieldContext_Pacient_label(ctx, field)
+			case "name":
+				return ec.fieldContext_Pacient_name(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Pacient", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_GetInstitutionPacients_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -5902,6 +5991,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
+		case "GetInstitutionPacients":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_GetInstitutionPacients(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
 		case "__type":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -6798,6 +6907,54 @@ func (ec *executionContext) marshalOMemberOf2ᚖCareXR_WebServiceᚋgraphᚋmode
 		return graphql.Null
 	}
 	return ec._MemberOf(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOPacient2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐPacient(ctx context.Context, sel ast.SelectionSet, v []*model.Pacient) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOPacient2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐPacient(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOPacient2ᚖCareXR_WebServiceᚋgraphᚋmodelᚐPacient(ctx context.Context, sel ast.SelectionSet, v *model.Pacient) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Pacient(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOPanoramicSession2ᚕᚖCareXR_WebServiceᚋgraphᚋmodelᚐPanoramicSession(ctx context.Context, sel ast.SelectionSet, v []*model.PanoramicSession) graphql.Marshaler {

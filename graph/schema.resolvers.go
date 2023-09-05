@@ -10,9 +10,8 @@ import (
 	"CareXR_WebService/graph/model"
 	"CareXR_WebService/pkg/bcrypt"
 	"CareXR_WebService/pkg/jwt"
-	"CareXR_WebService/services/neo4j"
-
 	"CareXR_WebService/services/mongoDB"
+	"CareXR_WebService/services/neo4j"
 	"context"
 	"fmt"
 	"time"
@@ -93,7 +92,10 @@ func (r *queryResolver) MedicationToTake(ctx context.Context, isAvailable bool, 
 
 // GetPanoramicSessions is the resolver for the GetPanoramicSessions field.
 func (r *queryResolver) GetPanoramicSessions(ctx context.Context, institutionID *string, panoramicID *string, directedFor []*string, externalFormat *bool) ([]*model.PanoramicSession, error) {
-	list := mongoDB.GetPanoramicImages(*institutionID, *panoramicID, directedFor)
+	institution := institutionID
+
+	ids := []string{*institution}
+	list := mongoDB.GetPanoramicImages(ids, "", nil)
 
 	hotspotsList := []*model.PanoramicSession{}
 
@@ -144,6 +146,54 @@ func (r *queryResolver) GetPanoramicSessions(ctx context.Context, institutionID 
 	}
 
 	return hotspotsList, nil
+}
+
+func mapToPacient(m map[string]interface{}) (*model.Pacient, error) {
+	var pacient model.Pacient
+
+	// Use type assertions to retrieve values from the map
+	if uuid, ok := m["uuid"].(string); ok {
+		pacient.UUID = &uuid
+	}
+
+	if label, ok := m["label"].(string); ok {
+		pacient.Label = &label
+	}
+
+	if name, ok := m["name"].(string); ok {
+		pacient.Name = &name
+	}
+
+	// Repeat this process for all fields
+
+	return &pacient, nil
+}
+
+// GetInstitutionPacients is the resolver for the GetInstitutionPacients field.
+func (r *queryResolver) GetInstitutionPacients(ctx context.Context, institutionID *string) ([]*model.Pacient, error) {
+	institution := *institutionID
+
+	pacients := []*model.Pacient{}
+
+	service := neo4j.NewInstitutionService(
+		&fixtures.FixtureLoader{Prefix: "../.."},
+		config.Neo4jDriver)
+
+	// Call GetInstitutionPacients to get []map[string]interface{} and convert it
+	result, _ := service.GetInstitutionPacients(institution)
+	for _, item := range result {
+		var pacient model.Pacient
+		uuid := item["uuid"].(string)
+		pacient.UUID = &uuid
+		label := item["label"].(string)
+		pacient.Label = &label
+		name := item["name"].(string)
+		pacient.Name = &name
+
+		pacients = append(pacients, &pacient)
+	}
+
+	return pacients, nil
 }
 
 // Query returns QueryResolver implementation.

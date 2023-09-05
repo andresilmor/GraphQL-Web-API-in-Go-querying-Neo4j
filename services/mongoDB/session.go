@@ -40,7 +40,7 @@ type Hotspot struct {
 	ImageWidth  int       `bson:"imageWidth"`
 }
 
-func GetPanoramicImages(institutionUUID string, hotspotUUID string, directedFor []*string) []Hotspot {
+func GetPanoramicImages(partOfInstitution []string, createdBy string, directedFor []string) []Hotspot {
 	uri := "mongodb+srv://andresilmor:project-greenhealth@carexr-mongodb-cluster.mcnxmz7.mongodb.net/?retryWrites=true&w=majority"
 	if uri == "" {
 		log.Fatal("You must set your 'MONGODB_URI' environmental variable. See\n\t https://www.mongodb.com/docs/drivers/go/current/usage-examples/#environment-variable")
@@ -54,10 +54,10 @@ func GetPanoramicImages(institutionUUID string, hotspotUUID string, directedFor 
 			panic(err)
 		}
 	}()
-	fmt.Printf("%s\n", institutionUUID)
+	//fmt.Printf("%s\n", institutionUUID)
 	coll := client.Database("SessionMaterial").Collection("360_hotspots")
 
-	ids := []string{"597d38a7-2fd1-4686-a3ef-96861466eb36"}
+	ids := &partOfInstitution
 
 	// Construct the filter
 	filter := bson.M{

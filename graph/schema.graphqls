@@ -168,6 +168,8 @@ type Query {
 
   GetPanoramicSessions(institutionID: String, panoramicID: String, directedFor:[String], externalFormat: Boolean) : [PanoramicSession]
 
+  GetInstitutionPacients(institutionID: String) : [Pacient]
+  
 }
 
 # ===================================================================== #
